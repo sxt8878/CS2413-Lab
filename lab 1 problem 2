@@ -27,13 +27,11 @@ Follow up: A linked list can be reversed either iteratively or recursively. Coul
 #include <stdio.h>
 #include <stdlib.h>
 
-// Definition of a linked list node
 struct ListNode {
     int val;
     struct ListNode *next;
 };
 
-// **Iterative Approach to Reverse a Linked List**
 struct ListNode* reverseListIterative(struct ListNode* head) {
     struct ListNode *prev = NULL, *curr = head, *next = NULL;
 
@@ -46,24 +44,20 @@ struct ListNode* reverseListIterative(struct ListNode* head) {
     return prev;
 }
 
-// **Recursive Approach to Reverse a Linked List**
 struct ListNode* reverseListRecursive(struct ListNode* head) {
     // Base case: If list is empty or has one node, return head
     if (head == NULL || head->next == NULL) {
         return head;
     }
     
-    // Recursively reverse the rest of the list
     struct ListNode* newHead = reverseListRecursive(head->next);
     
-    // Adjust the next pointers
     head->next->next = head;
     head->next = NULL;
     
     return newHead;
 }
 
-// Function to create a new node
 struct ListNode* createNode(int val) {
     struct ListNode* newNode = (struct ListNode*)malloc(sizeof(struct ListNode));
     newNode->val = val;
@@ -71,7 +65,6 @@ struct ListNode* createNode(int val) {
     return newNode;
 }
 
-// Function to print the linked list
 void printList(struct ListNode* head) {
     struct ListNode* temp = head;
     while (temp != NULL) {
@@ -81,7 +74,6 @@ void printList(struct ListNode* head) {
     printf("NULL\n");
 }
 
-// Function to free the linked list
 void freeList(struct ListNode* head) {
     struct ListNode* temp;
     while (head != NULL) {
@@ -91,9 +83,8 @@ void freeList(struct ListNode* head) {
     }
 }
 
-// **Main function to test both reversal methods**
 int main() {
-    // Creating a sample linked list: 1 -> 2 -> 3 -> 4 -> 5 -> NULL
+
     struct ListNode* head = createNode(1);
     head->next = createNode(2);
     head->next->next = createNode(3);
@@ -103,12 +94,10 @@ int main() {
     printf("Original List: ");
     printList(head);
 
-    // Testing Iterative Reversal
     head = reverseListIterative(head);
     printf("Reversed List (Iterative): ");
     printList(head);
 
-    // Reversing back to the original list using recursion
     head = reverseListRecursive(head);
     printf("Reversed List (Recursive): ");
     printList(head);
