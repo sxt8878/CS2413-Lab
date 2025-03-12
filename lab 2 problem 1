@@ -1,0 +1,106 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+typedef struct {
+    int *data;
+    int top;
+    int capacity;
+} Stack;
+
+void initStack(Stack *stack, int capacity) {
+    stack->data = (int *)malloc(capacity * sizeof(int));
+    stack->top = -1;
+    stack->capacity = capacity;
+}
+
+int isStackEmpty(Stack *stack) {
+    return stack->top == -1;
+}
+
+int isStackFull(Stack *stack) {
+    return stack->top == stack->capacity - 1;
+}
+
+void pushStack(Stack *stack, int value) {
+    if (isStackFull(stack)) {
+        printf("Stack overflow\n");
+        return;
+    }
+    stack->data[++stack->top] = value;
+}
+
+int popStack(Stack *stack) {
+    if (isStackEmpty(stack)) {
+        printf("Stack underflow\n");
+        return -1; // Returning a dummy value indicating failure
+    }
+    return stack->data[stack->top--];
+}
+
+int peekStack(Stack *stack) {
+    if (isStackEmpty(stack)) {
+        printf("Stack is empty\n");
+        return -1; // Returning a dummy value indicating failure
+    }
+    return stack->data[stack->top];
+}
+
+typedef struct {
+    Stack inputStack;
+    Stack outputStack;
+} MyQueue;
+
+void myQueueInit(MyQueue *queue, int capacity) {
+    initStack(&queue->inputStack, capacity);
+    initStack(&queue->outputStack, capacity);
+}
+
+void myQueuePush(MyQueue *queue, int x) {
+    pushStack(&queue->inputStack, x);
+}
+
+int myQueuePop(MyQueue *queue) {
+    if (isStackEmpty(&queue->outputStack)) {
+        while (!isStackEmpty(&queue->inputStack)) {
+            pushStack(&queue->outputStack, popStack(&queue->inputStack));
+        }
+    }
+    return popStack(&queue->outputStack);
+}
+
+int myQueuePeek(MyQueue *queue) {
+    if (isStackEmpty(&queue->outputStack)) {
+        while (!isStackEmpty(&queue->inputStack)) {
+            pushStack(&queue->outputStack, popStack(&queue->inputStack));
+        }
+    }
+    return peekStack(&queue->outputStack);
+}
+
+int myQueueEmpty(MyQueue *queue) {
+    return isStackEmpty(&queue->inputStack) && isStackEmpty(&queue->outputStack);
+}
+
+void myQueueFree(MyQueue *queue) {
+    free(queue->inputStack.data);
+    free(queue->outputStack.data);
+}
+
+int main() {
+    MyQueue queue;
+    myQueueInit(&queue, 100);
+
+    myQueuePush(&queue, 1);
+    myQueuePush(&queue, 2);
+
+    printf("%d\n", myQueuePeek(&queue)); // Output: 1
+    printf("%d\n", myQueuePop(&queue));  // Output: 1
+    printf("%d\n", myQueueEmpty(&queue)); // Output: 0
+
+    myQueueFree(&queue); // Free allocated memory
+    return 0;
+}
+
+
+follow up - Because each element is moved from inputStack to outputStack at most once, the total time for 
+ operations is making each operation amortized.
