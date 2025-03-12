@@ -1,0 +1,255 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+
+typedef struct Queue {
+    int *data;
+    int front, rear, size, capacity;
+} Queue;
+
+
+Queue* createQueue(int capacity) {
+    Queue* queue = (Queue*)malloc(sizeof(Queue));
+    queue->capacity = capacity;
+    queue->front = queue->size = 0;
+    queue->rear = capacity - 1;
+    queue->data = (int*)malloc(queue->capacity * sizeof(int));
+    return queue;
+}
+
+
+int isFull(Queue* queue) {
+    return (queue->size == queue->capacity);
+}
+
+int isEmpty(Queue* queue) {
+    return (queue->size == 0);
+}
+
+void enqueue(Queue* queue, int item) {
+    if (isFull(queue)) {
+        printf("Queue overflow\n");
+        return;
+    }
+    queue->rear = (queue->rear + 1) % queue->capacity;
+    queue->data[queue->rear] = item;
+    queue->size++;
+}
+
+int dequeue(Queue* queue) {
+    if (isEmpty(queue)) {
+        printf("Queue underflow\n");
+        return -1;
+    }
+    int item = queue->data[queue->front];
+    queue->front = (queue->front + 1) % queue->capacity;
+    queue->size--;
+    return item;
+}
+
+int front(Queue* queue) {
+    if (isEmpty(queue)) {
+        printf("Queue is empty\n");
+        return -1;
+    }
+    return queue->data[queue->front];
+}
+
+
+typedef struct MyStack {
+    Queue* queue1;
+    Queue* queue2;
+} MyStack;
+
+
+MyStack* createStack(int capacity) {
+    MyStack* stack = (MyStack*)malloc(sizeof(MyStack));
+    stack->queue1 = createQueue(capacity);
+    stack->queue2 = createQueue(capacity);
+    return stack;
+}
+
+
+void push(MyStack* stack, int x) {
+    enqueue(stack->queue2, x);
+    
+    // Move all elements from queue1 to queue2
+    while (!isEmpty(stack->queue1)) {
+        enqueue(stack->queue2, dequeue(stack->queue1));
+    }
+
+    // Swap queue1 and queue2
+    Queue* temp = stack->queue1;
+    stack->queue1 = stack->queue2;
+    stack->queue2 = temp;
+}
+
+
+int pop(MyStack* stack) {
+    if (isEmpty(stack->queue1)) {
+        printf("Stack underflow\n");
+        return -1;
+    }
+    return dequeue(stack->queue1);
+}
+
+
+int top(MyStack* stack) {
+    if (isEmpty(stack->queue1)) {
+        printf("Stack is empty\n");
+        return -1;
+    }
+    return front(stack->queue1);
+}
+
+
+int empty(MyStack* stack) {
+    return isEmpty(stack->queue1);
+}
+
+
+void freeStack(MyStack* stack) {
+    free(stack->queue1->data);
+    free(stack->queue2->data);
+    free(stack->queue1);
+    free(stack->queue2);
+    free(stack);
+}
+
+
+int main() {
+    MyStack* stack = createStack(100);
+
+    push(stack, 1);
+    push(stack, 2);
+    push(stack, 3);
+
+    printf("Top: %d\n", top(stack));  // Output: 3
+    printf("Pop: %d\n", pop(stack));  // Output: 3
+    printf("Empty: %d\n", empty(stack)); // Output: 0 (false)
+
+    freeStack(stack);
+    return 0;
+}
+
+
+follow up - To use a stack using only one queue, you can leverage the queue's properties by rotating the elements within the queue. This way is to use a single queue to simulate the stack operation by making the recent added element always at the front.
+
+#include <stdio.h>
+#include <stdlib.h>
+
+
+typedef struct Queue {
+    int *data;
+    int front, rear, size, capacity;
+} Queue;
+
+
+Queue* createQueue(int capacity) {
+    Queue* queue = (Queue*)malloc(sizeof(Queue));
+    queue->capacity = capacity;
+    queue->front = queue->size = 0;
+    queue->rear = capacity - 1;
+    queue->data = (int*)malloc(queue->capacity * sizeof(int));
+    return queue;
+}
+
+
+int isFull(Queue* queue) {
+    return (queue->size == queue->capacity);
+}
+
+int isEmpty(Queue* queue) {
+    return (queue->size == 0);
+}
+
+void enqueue(Queue* queue, int item) {
+    if (isFull(queue)) {
+        printf("Queue overflow\n");
+        return;
+    }
+    queue->rear = (queue->rear + 1) % queue->capacity;
+    queue->data[queue->rear] = item;
+    queue->size++;
+}
+
+int dequeue(Queue* queue) {
+    if (isEmpty(queue)) {
+        printf("Stack underflow\n");
+        return -1;
+    }
+    int item = queue->data[queue->front];
+    queue->front = (queue->front + 1) % queue->capacity;
+    queue->size--;
+    return item;
+}
+
+int front(Queue* queue) {
+    if (isEmpty(queue)) {
+        printf("Stack is empty\n");
+        return -1;
+    }
+    return queue->data[queue->front];
+}
+
+
+typedef struct MyStack {
+    Queue* queue;
+} MyStack;
+
+
+MyStack* createStack(int capacity) {
+    MyStack* stack = (MyStack*)malloc(sizeof(MyStack));
+    stack->queue = createQueue(capacity);
+    return stack;
+}
+
+
+void push(MyStack* stack, int x) {
+    enqueue(stack->queue, x);
+    int size = stack->queue->size;
+
+    
+    for (int i = 0; i < size - 1; i++) {
+        enqueue(stack->queue, dequeue(stack->queue));
+    }
+}
+
+
+int pop(MyStack* stack) {
+    return dequeue(stack->queue);
+}
+
+
+int top(MyStack* stack) {
+    return front(stack->queue);
+}
+
+
+int empty(MyStack* stack) {
+    return isEmpty(stack->queue);
+}
+
+
+void freeStack(MyStack* stack) {
+    free(stack->queue->data);
+    free(stack->queue);
+    free(stack);
+}
+
+
+int main() {
+    MyStack* stack = createStack(100);
+
+    push(stack, 1);
+    push(stack, 2);
+    push(stack, 3);
+
+    printf("Top: %d\n", top(stack));  // Output: 3
+    printf("Pop: %d\n", pop(stack));  // Output: 3
+    printf("Empty: %d\n", empty(stack)); // Output: 0 (false)
+
+    freeStack(stack);
+    return 0;
+}
+
