@@ -1,0 +1,171 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+#define MAX_NODES 100 
+
+struct TreeNode {
+    int val;
+    struct TreeNode *left;
+    struct TreeNode *right;
+};
+
+void inorderHelper(struct TreeNode* root, int* result, int* returnSize) {
+    if (root == NULL) {
+        return;
+    }
+
+    inorderHelper(root->left, result, returnSize);
+
+    if (*returnSize >= MAX_NODES) {
+        fprintf(stderr, "Exceeded maximum number of nodes allowed in result.\n");
+        exit(EXIT_FAILURE);
+    }
+
+    result[(*returnSize)++] = root->val;
+
+    inorderHelper(root->right, result, returnSize);
+}
+
+int* inorderTraversal(struct TreeNode* root, int* returnSize) {
+    int* result = (int*)malloc(MAX_NODES * sizeof(int));
+    if (!result) {
+        fprintf(stderr, "Memory allocation for result array failed.\n");
+        exit(EXIT_FAILURE);
+    }
+
+    *returnSize = 0;
+    inorderHelper(root, result, returnSize);
+    return result;
+}
+
+void printArray(int* arr, int size) {
+    printf("Output: [");
+    for (int i = 0; i < size; i++) {
+        printf("%d", arr[i]);
+        if (i < size - 1) {
+            printf(",");
+        }
+    }
+    printf("]\n");
+}
+
+int main() {
+    struct TreeNode node3 = {3, NULL, NULL};
+    struct TreeNode node2 = {2, &node3, NULL};
+    struct TreeNode root1 = {1, NULL, &node2};
+
+    int returnSize1;
+    int* result1 = inorderTraversal(&root1, &returnSize1);
+    printArray(result1, returnSize1);
+    free(result1);
+
+    struct TreeNode node9 = {9, NULL, NULL};
+    struct TreeNode node8 = {8, &node9, NULL};
+    struct TreeNode node7 = {7, NULL, NULL};
+    struct TreeNode node6 = {6, NULL, NULL};
+    struct TreeNode node5 = {5, &node6, &node7};
+    struct TreeNode node4 = {4, NULL, NULL};
+    struct TreeNode node3_2 = {3, NULL, &node8};
+    struct TreeNode node2_2 = {2, &node4, &node5};
+    struct TreeNode root2 = {1, &node2_2, &node3_2};
+
+    int returnSize2;
+    int* result2 = inorderTraversal(&root2, &returnSize2);
+    printArray(result2, returnSize2);
+    free(result2);
+
+    return 0;
+}
+
+- - - - Follow Up Problem - - - 
+
+
+#include <stdio.h>
+#include <stdlib.h>
+
+#define MAX_NODES 100
+
+struct TreeNode {
+    int val;
+    struct TreeNode *left;
+    struct TreeNode *right;
+};
+
+int* inorderTraversal(struct TreeNode* root, int* returnSize) {
+    int* result = (int*)malloc(MAX_NODES * sizeof(int));
+    if (!result) {
+        fprintf(stderr, "Memory allocation failed for result array.\n");
+        exit(EXIT_FAILURE);
+    }
+
+    struct TreeNode* stack[MAX_NODES];
+    int stackSize = 0;
+
+    *returnSize = 0;
+    struct TreeNode* current = root;
+
+    while (current != NULL || stackSize > 0) {
+        while (current != NULL) {
+            if (stackSize >= MAX_NODES) {
+                fprintf(stderr, "Stack overflow.\n");
+                free(result);
+                exit(EXIT_FAILURE);
+            }
+            stack[stackSize++] = current;
+            current = current->left;
+        }
+
+        current = stack[--stackSize];
+
+        if (*returnSize >= MAX_NODES) {
+            fprintf(stderr, "Exceeded max result size.\n");
+            free(result);
+            exit(EXIT_FAILURE);
+        }
+
+        result[(*returnSize)++] = current->val;
+        current = current->right;
+    }
+
+    return result;
+}
+
+void printArray(int* arr, int size) {
+    printf("Output: [");
+    for (int i = 0; i < size; i++) {
+        printf("%d", arr[i]);
+        if (i < size - 1) {
+            printf(",");
+        }
+    }
+    printf("]\n");
+}
+
+int main() {
+    // Example 1: root = [1,null,2,3]
+    struct TreeNode node3 = {3, NULL, NULL};
+    struct TreeNode node2 = {2, &node3, NULL};
+    struct TreeNode root1 = {1, NULL, &node2};
+
+    int returnSize1;
+    int* result1 = inorderTraversal(&root1, &returnSize1);
+    printArray(result1, returnSize1);
+    free(result1);
+
+    struct TreeNode node9 = {9, NULL, NULL};
+    struct TreeNode node8 = {8, &node9, NULL};
+    struct TreeNode node7 = {7, NULL, NULL};
+    struct TreeNode node6 = {6, NULL, NULL};
+    struct TreeNode node5 = {5, &node6, &node7};
+    struct TreeNode node4 = {4, NULL, NULL};
+    struct TreeNode node3_2 = {3, NULL, &node8};
+    struct TreeNode node2_2 = {2, &node4, &node5};
+    struct TreeNode root2 = {1, &node2_2, &node3_2};
+
+    int returnSize2;
+    int* result2 = inorderTraversal(&root2, &returnSize2);
+    printArray(result2, returnSize2);
+    free(result2);
+
+    return 0;
+}
