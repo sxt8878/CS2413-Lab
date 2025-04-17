@@ -1,0 +1,161 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+struct TreeNode {
+    int val;
+    struct TreeNode *left;
+    struct TreeNode *right;
+};
+
+struct Stack {
+    struct TreeNode** array;
+    int top;
+    int capacity;
+};
+
+struct Stack* createStack(int capacity) {
+    struct Stack* stack = (struct Stack*)malloc(sizeof(struct Stack));
+    if (stack == NULL) {
+        fprintf(stderr, "Failed to allocate memory for stack.\n");
+        exit(EXIT_FAILURE);
+    }
+
+    stack->capacity = capacity;
+    stack->top = -1;
+    stack->array = (struct TreeNode**)malloc(capacity * sizeof(struct TreeNode*));
+    if (stack->array == NULL) {
+        fprintf(stderr, "Failed to allocate memory for stack array.\n");
+        free(stack);
+        exit(EXIT_FAILURE);
+    }
+
+    return stack;
+}
+
+void push(struct Stack* stack, struct TreeNode* item) {
+    if (stack->top + 1 >= stack->capacity) {
+        fprintf(stderr, "Stack overflow while pushing.\n");
+        exit(EXIT_FAILURE);
+    }
+    stack->array[++stack->top] = item;
+}
+
+struct TreeNode* pop(struct Stack* stack) {
+    if (stack->top == -1) {
+        return NULL;
+    }
+    return stack->array[stack->top--];
+}
+
+int isEmpty(struct Stack* stack) {
+    return stack->top == -1;
+}
+
+int* preorderTraversal(struct TreeNode* root, int* returnSize) {
+    *returnSize = 0;
+    if (root == NULL) return NULL;
+
+    int* result = (int*)malloc(MAX_NODES * sizeof(int));
+    if (result == NULL) {
+        fprintf(stderr, "Failed to allocate memory for result array.\n");
+        exit(EXIT_FAILURE);
+    }
+
+    struct Stack* stack = createStack(MAX_NODES);
+    push(stack, root);
+
+    while (!isEmpty(stack)) {
+
+    - - Follow Up Problem - - 
+
+
+#include <stdio.h>
+#include <stdlib.h>
+
+#define MAX_NODES 100 
+
+struct TreeNode {
+    int val;
+    struct TreeNode *left;
+    struct TreeNode *right;
+};
+
+struct Stack {
+    struct TreeNode** array;
+    int top;
+    int capacity;
+};
+
+struct Stack* createStack(int capacity) {
+    struct Stack* stack = (struct Stack*)malloc(sizeof(struct Stack));
+    if (!stack) {
+        fprintf(stderr, "Failed to allocate memory for stack.\n");
+        exit(EXIT_FAILURE);
+    }
+
+    stack->capacity = capacity;
+    stack->top = -1;
+    stack->array = (struct TreeNode**)malloc(capacity * sizeof(struct TreeNode*));
+    if (!stack->array) {
+        fprintf(stderr, "Failed to allocate memory for stack array.\n");
+        free(stack);
+        exit(EXIT_FAILURE);
+    }
+
+    return stack;
+}
+
+void push(struct Stack* stack, struct TreeNode* item) {
+    if (stack->top + 1 >= stack->capacity) {
+        fprintf(stderr, "Stack overflow.\n");
+        exit(EXIT_FAILURE);
+    }
+    stack->array[++stack->top] = item;
+}
+
+struct TreeNode* pop(struct Stack* stack) {
+    if (stack->top == -1) return NULL;
+    return stack->array[stack->top--];
+}
+
+int isEmpty(struct Stack* stack) {
+    return stack->top == -1;
+}
+
+int* preorderTraversal(struct TreeNode* root, int* returnSize) {
+    *returnSize = 0;
+    if (root == NULL) {
+        return NULL;
+    }
+
+    int* result = (int*)malloc(MAX_NODES * sizeof(int));
+    if (!result) {
+        fprintf(stderr, "Failed to allocate memory for result array.\n");
+        exit(EXIT_FAILURE);
+    }
+
+    struct Stack* stack = createStack(MAX_NODES);
+    push(stack, root);
+
+    while (!isEmpty(stack)) {
+        struct TreeNode* node = pop(stack);
+        if (*returnSize >= MAX_NODES) {
+            fprintf(stderr, "Result array capacity exceeded.\n");
+            free(stack->array);
+            free(stack);
+            free(result);
+            exit(EXIT_FAILURE);
+        }
+
+        result[(*returnSize)++] = node->val;
+
+        if (node->right != NULL) {
+            push(stack, node->right);
+        }
+        if (node
+
+
+
+
+
+
