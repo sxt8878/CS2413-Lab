@@ -1,0 +1,121 @@
+#include <stdbool.h>
+#include <stdlib.h>
+
+// Definition for a binary tree node.
+typedef struct TreeNode {
+    int val;
+    struct TreeNode* left;
+    struct TreeNode* right;
+} TreeNode;
+
+bool isMirror(TreeNode* left, TreeNode* right) {
+    if (left == NULL && right == NULL) {
+        return true;
+    }
+    if (left == NULL || right == NULL) {
+        return false;
+    }
+    if (left->val != right->val) {
+        return false;
+    }
+    return isMirror(left->left, right->right) &&
+           isMirror(left->right, right->left);
+}
+
+bool isSymmetric(TreeNode* root) {
+    if (root == NULL) return true;
+    return isMirror(root->left, root->right);
+}
+
+
+------ FOLLOW UP --------
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+
+typedef struct TreeNode {
+    int val;
+    struct TreeNode* left;
+    struct TreeNode* right;
+} TreeNode;
+
+bool isMirror(TreeNode* left, TreeNode* right) {
+    if (left == NULL && right == NULL) return true;
+    if (left == NULL || right == NULL) return false;
+    if (left->val != right->val) return false;
+    return isMirror(left->left, right->right) &&
+           isMirror(left->right, right->left);
+}
+
+bool isSymmetricRecursive(TreeNode* root) {
+    if (root == NULL) return true;
+    return isMirror(root->left, root->right);
+}
+
+typedef struct {
+    TreeNode* node1;
+    TreeNode* node2;
+} Pair;
+
+typedef struct {
+    Pair* data;
+    int front;
+    int rear;
+    int capacity;
+} Queue;
+
+Queue* createQueue(int capacity) {
+    Queue* q = malloc(sizeof(Queue));
+    q->data = malloc(sizeof(Pair) * capacity);
+    q->front = 0;
+    q->rear = 0;
+    q->capacity = capacity;
+    return q;
+}
+
+bool isQueueEmpty(Queue* q) {
+    return q->front == q->rear;
+}
+
+void enqueue(Queue* q, TreeNode* node1, TreeNode* node2) {
+    if (q->rear >= q->capacity) return; // no resizing for simplicity
+    q->data[q->rear++] = (Pair){ node1, node2 };
+}
+
+Pair dequeue(Queue* q) {
+    return q->data[q->front++];
+}
+
+void freeQueue(Queue* q) {
+    free(q->data);
+    free(q);
+}
+
+bool isSymmetricIterative(TreeNode* root) {
+    if (root == NULL) return true;
+    Queue* q = createQueue(1000);  // adjust capacity as needed
+    enqueue(q, root->left, root->right);
+
+    while (!isQueueEmpty(q)) {
+        Pair p = dequeue(q);
+        TreeNode* t1 = p.node1;
+        TreeNode* t2 = p.node2;
+
+        if (t1 == NULL && t2 == NULL) continue;
+        if (t1 == NULL || t2 == NULL) {
+            freeQueue(q);
+            return false;
+        }
+        if (t1->val != t2->val) {
+            freeQueue(q);
+            return false;
+        }
+
+        enqueue(q, t1->left, t2->right);
+        enqueue(q, t1->right, t2->left);
+    }
+
+    freeQueue(q);
+    return true;
+}
